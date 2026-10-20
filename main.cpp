@@ -5,19 +5,39 @@
 #include <string>
 #include <vector>
 
+char normalizeOperator(char symbol) {
+    switch (symbol) {
+        case '+':
+        case '@':
+            return '+';
+
+        case '-':
+            return '-';
+
+        case '*':
+        case '#':
+            return '*';
+
+        case '/':
+            return '/';
+
+        default:
+            return '\0';
+    }
+}
+
 bool isOperator(char symbol) {
-    return symbol == '+' ||
-           symbol == '-' ||
-           symbol == '*' ||
-           symbol == '/';
+    return normalizeOperator(symbol) != '\0';
 }
 
 int precedence(char operation) {
-    if (operation == '+' || operation == '-') {
+    char normalized = normalizeOperator(operation);
+
+    if (normalized == '+' || normalized == '-') {
         return 1;
     }
 
-    if (operation == '*' || operation == '/') {
+    if (normalized == '*' || normalized == '/') {
         return 2;
     }
 
@@ -165,7 +185,9 @@ double evaluatePostfix(const std::vector<std::string>& postfix) {
         }
 
         if (token.size() != 1 || !isOperator(token[0])) {
-            throw std::runtime_error("Invalid token in postfix expression");
+            throw std::runtime_error(
+                "Invalid token in postfix expression"
+            );
         }
 
         if (values.size() < 2) {
@@ -179,8 +201,9 @@ double evaluatePostfix(const std::vector<std::string>& postfix) {
         values.pop_back();
 
         double result = 0;
+        char operation = normalizeOperator(token[0]);
 
-        switch (token[0]) {
+        switch (operation) {
             case '+':
                 result = left + right;
                 break;
@@ -200,6 +223,9 @@ double evaluatePostfix(const std::vector<std::string>& postfix) {
 
                 result = left / right;
                 break;
+
+            default:
+                throw std::runtime_error("Unknown operator");
         }
 
         values.push_back(result);
