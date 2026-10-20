@@ -1,4 +1,5 @@
 #include <cctype>
+#include <iomanip>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -153,6 +154,66 @@ std::vector<std::string> toPostfix(const std::string& expression) {
     return output;
 }
 
+double evaluatePostfix(const std::vector<std::string>& postfix) {
+    std::vector<double> values;
+
+    for (const std::string& token : postfix) {
+        if (!token.empty() &&
+            std::isdigit(static_cast<unsigned char>(token[0]))) {
+            values.push_back(std::stod(token));
+            continue;
+        }
+
+        if (token.size() != 1 || !isOperator(token[0])) {
+            throw std::runtime_error("Invalid token in postfix expression");
+        }
+
+        if (values.size() < 2) {
+            throw std::runtime_error("Not enough operands");
+        }
+
+        double right = values.back();
+        values.pop_back();
+
+        double left = values.back();
+        values.pop_back();
+
+        double result = 0;
+
+        switch (token[0]) {
+            case '+':
+                result = left + right;
+                break;
+
+            case '-':
+                result = left - right;
+                break;
+
+            case '*':
+                result = left * right;
+                break;
+
+            case '/':
+                if (right == 0) {
+                    throw std::runtime_error("Division by zero");
+                }
+
+                result = left / right;
+                break;
+        }
+
+        values.push_back(result);
+    }
+
+    if (values.size() != 1) {
+        throw std::runtime_error(
+            "Invalid postfix expression: expected one result"
+        );
+    }
+
+    return values.back();
+}
+
 int main() {
     std::string expression;
 
@@ -178,6 +239,12 @@ int main() {
         }
 
         std::cout << '\n';
+
+        double result = evaluatePostfix(postfix);
+
+        std::cout << std::setprecision(15);
+        std::cout << "Result: " << result << '\n';
+
     } catch (const std::exception& error) {
         std::cerr << "Error: " << error.what() << '\n';
         return 1;
