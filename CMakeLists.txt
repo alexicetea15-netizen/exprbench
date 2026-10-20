@@ -13,26 +13,38 @@ add_executable(exprbench
     src/evaluator.cpp
 )
 
-target_include_directories(exprbench PRIVATE include)
-
 add_executable(exprbench_benchmark
     benchmarks/benchmark.cpp
     src/operators.cpp
     src/evaluator.cpp
 )
 
+add_executable(exprbench_tests
+    tests/tests.cpp
+    src/operators.cpp
+    src/postfix.cpp
+    src/evaluator.cpp
+)
+
+target_include_directories(exprbench PRIVATE include)
+
 target_include_directories(exprbench_benchmark PRIVATE include)
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(exprbench PRIVATE
-        -Wall
-        -Wextra
-        -Wpedantic
-    )
+target_include_directories(exprbench_tests PRIVATE include)
 
-    target_compile_options(exprbench_benchmark PRIVATE
-        -Wall
-        -Wextra
-        -Wpedantic
-    )
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    foreach(target exprbench exprbench_benchmark exprbench_tests)
+        target_compile_options(${target} PRIVATE
+            -Wall
+            -Wextra
+            -Wpedantic
+        )
+    endforeach()
 endif()
+
+enable_testing()
+
+add_test(
+    NAME exprbench_tests
+    COMMAND exprbench_tests
+)
