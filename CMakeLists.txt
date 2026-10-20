@@ -15,8 +15,22 @@ add_executable(exprbench
 
 target_include_directories(exprbench PRIVATE include)
 
+add_executable(exprbench_benchmark
+    benchmarks/benchmark.cpp
+    src/operators.cpp
+    src/evaluator.cpp
+)
+
+target_include_directories(exprbench_benchmark PRIVATE include)
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(exprbench PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+    )
+
+    target_compile_options(exprbench_benchmark PRIVATE
         -Wall
         -Wextra
         -Wpedantic
