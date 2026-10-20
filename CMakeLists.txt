@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(ExprBench LANGUAGES CXX)
+project(ExprBench VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -26,21 +26,17 @@ add_executable(exprbench_tests
     src/evaluator.cpp
 )
 
-target_include_directories(exprbench PRIVATE include)
+foreach(target exprbench exprbench_benchmark exprbench_tests)
+    target_include_directories(${target} PRIVATE include)
 
-target_include_directories(exprbench_benchmark PRIVATE include)
-
-target_include_directories(exprbench_tests PRIVATE include)
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    foreach(target exprbench exprbench_benchmark exprbench_tests)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         target_compile_options(${target} PRIVATE
             -Wall
             -Wextra
             -Wpedantic
         )
-    endforeach()
-endif()
+    endif()
+endforeach()
 
 enable_testing()
 

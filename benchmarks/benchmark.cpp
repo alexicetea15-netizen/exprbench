@@ -5,7 +5,6 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -43,15 +42,16 @@ int main() {
     csv << std::fixed << std::setprecision(9);
 
     for (std::size_t operations : sizes) {
-        std::vector<std::string> postfix = makePostfix(operations);
+        const std::vector<std::string> postfix =
+            makePostfix(operations);
 
-        std::size_t repetitions =
+        const std::size_t repetitions =
             std::max<std::size_t>(10, 100000 / operations);
 
-        double expected =
+        const double expected =
             static_cast<double>(operations + 1);
 
-        double warmup = evaluatePostfix(postfix);
+        const double warmup = evaluatePostfix(postfix);
 
         if (warmup != expected) {
             std::cerr << "Error: incorrect benchmark input\n";
@@ -79,11 +79,11 @@ int main() {
                 return 1;
             }
 
-            double elapsedSeconds =
+            const double elapsedSeconds =
                 static_cast<double>(finish - start) /
                 CLOCKS_PER_SEC;
 
-            double averageMicroseconds =
+            const double averageMicroseconds =
                 elapsedSeconds * 1000000.0 / repetitions;
 
             csv << operations << ','
@@ -102,6 +102,11 @@ int main() {
     }
 
     csv.close();
+
+    if (!csv) {
+        std::cerr << "Error: failed to write benchmark results\n";
+        return 1;
+    }
 
     std::cout << "\nResults saved to results/benchmark.csv\n";
 
